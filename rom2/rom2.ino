@@ -12,8 +12,9 @@
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
 // Contains receiver macAdress
-uint8_t broadcastAddress[] = {0xD8, 0xA0, 0x1D, 0x5F, 0xB6, 0xFC};
-
+//uint8_t broadcastAddress[] = {0xD8, 0xA0, 0x1D, 0x5F, 0xB6, 0xFC}; // Diane's
+uint8_t broadcastAddress[] = {0x98, 0xCD, 0xAC, 0xF7, 0x8A, 0xD0}; // Chelsea
+//98:CD:AC:F7:8A:D0 
 typedef struct struct_message{
   int id;
   int x;
@@ -91,7 +92,7 @@ if(!bno.begin())
   bno.setExtCrystalUse(true);
   
   Serial.println(WiFi.macAddress());
-  //98:CD:AC:F7:8A:D0
+  //98:CD:AC:F7:8A:D0 
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -147,5 +148,4 @@ void loop() {
   delay(1000);
   
 }
-
 
