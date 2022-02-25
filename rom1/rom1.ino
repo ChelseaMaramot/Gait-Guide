@@ -22,14 +22,14 @@ typedef struct struct_message {
   int z;
 }struct_message;
 
-// Create a struct_message called myData
-struct_message myData;
+// Create a struct_message called thigh_data
+struct_message thigh_data;
 
 // Create a structure to hold the readings from each board
-struct_message board1;
+struct_message board1_thigh_thigh;
 
 // Create an array with all the structures
-struct_message boardsStruct[1] = {board1};
+struct_message boardsStruct[1] = {board1_thigh_thigh};
 
 // callback function that will be executed when data is received
 void OnDataRecv(const uint8_t * mac_addr, const uint8_t *incomingData, int len) {
@@ -42,15 +42,15 @@ void OnDataRecv(const uint8_t * mac_addr, const uint8_t *incomingData, int len) 
   //Serial.println(macStr);
 
   
-  memcpy(&myData, incomingData, sizeof(myData));
-  //Serial.printf("Board ID %u: %u bytes\n", myData.id, len);
+  memcpy(&thigh_data, incomingData, sizeof(thigh_data));
+  //Serial.printf("Board ID %u: %u bytes\n", thigh_data.id, len);
   // Update the structures with the new incoming data
-  boardsStruct[myData.id-1].x = myData.x;
-  boardsStruct[myData.id-1].y = myData.y;
-  boardsStruct[myData.id-1].z = myData.z;
-  Serial.printf("shank %d ", boardsStruct[myData.id-1].x);
-  Serial.printf(" %d ", boardsStruct[myData.id-1].y);
-  Serial.printf(" %d ", boardsStruct[myData.id-1].z);
+  boardsStruct[thigh_data.id-1].x = thigh_data.x;
+  boardsStruct[thigh_data.id-1].y = thigh_data.y;
+  boardsStruct[thigh_data.id-1].z = thigh_data.z;
+  Serial.printf("shank %d ", boardsStruct[thigh_data.id-1].x);
+  Serial.printf(" %d ", boardsStruct[thigh_data.id-1].y);
+  Serial.printf(" %d ", boardsStruct[thigh_data.id-1].z);
   Serial.println();
 }
 
@@ -142,25 +142,25 @@ int calculate_knee_angle(int thigh_y, int shank_z){
 
 
   //return thigh_y * -1 - (shank_z + 90)*-1;
-  return (thigh_y * - shank_z - 90) *-1;
+  return (thigh_y - shank_z - 90) *-1;
 }
 
 void loop() {
   
   // Access the variables for each board --> shank
-  int board1X = boardsStruct[0].x;
-  int board1Y = boardsStruct[0].y;
-  int board1Z = boardsStruct[0].z;
+  int board1_thighX = boardsStruct[0].x;
+  int board1_thighY = boardsStruct[0].y;
+  int board1_thighZ = boardsStruct[0].z;
 
-  imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
+  imu::Vector<3> shank_euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
 
-  Serial.print("knee joint angle: "); Serial.print(calculate_knee_angle(euler.y(), board1Z));
+  Serial.print("knee joint angle: "); Serial.print(calculate_knee_angle(shank_euler.y(), board1_thighZ));
   Serial.println();
 
   //  thigh angles
-  Serial.print("\nthigh: "); Serial.print(euler.x());
-  Serial.print(" "); Serial.print(euler.y());
-  Serial.print(" "); Serial.print(euler.z());
+  Serial.print("\nthigh: "); Serial.print(shank_euler.x());
+  Serial.print(" "); Serial.print(shank_euler.y());
+  Serial.print(" "); Serial.print(shank_euler.z());
   Serial.println();
 
   delay(1000);
