@@ -6,11 +6,10 @@
 #include <utility/imumaths.h>
 #include <WiFi.h>
 #include <esp_now.h>
-
-
 #define BNO055_SAMPLERATE_DELAY_MS (100)
   
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
+
 
 // This is the receiver ESP32 --> Master 1420 usb left
 
@@ -37,21 +36,21 @@ void OnDataRecv(const uint8_t * mac_addr, const uint8_t *incomingData, int len) 
 
   // get board macAdress
   char macStr[18];
-  Serial.print("Packet received from: ");
+  //Serial.print("Packet received from: ");
   snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
            mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
-  Serial.println(macStr);
+  //Serial.println(macStr);
 
   
   memcpy(&myData, incomingData, sizeof(myData));
-  Serial.printf("Board ID %u: %u bytes\n", myData.id, len);
+  //Serial.printf("Board ID %u: %u bytes\n", myData.id, len);
   // Update the structures with the new incoming data
   boardsStruct[myData.id-1].x = myData.x;
   boardsStruct[myData.id-1].y = myData.y;
   boardsStruct[myData.id-1].z = myData.z;
-  Serial.printf("x value: %d \n", boardsStruct[myData.id-1].x);
-  Serial.printf("y value: %d \n", boardsStruct[myData.id-1].y);
-  Serial.printf("z value: %d \n", boardsStruct[myData.id-1].z);
+  Serial.printf("shank %d ", boardsStruct[myData.id-1].x);
+  Serial.printf(" %d ", boardsStruct[myData.id-1].y);
+  Serial.printf(" %d ", boardsStruct[myData.id-1].z);
   Serial.println();
 }
 
@@ -133,14 +132,36 @@ if(!bno.begin())
   
 }
 
+int calculate_knee_angle(int thigh_y, int shank_z){
+  // Thigh Y value located on the side of the thigh
+  // Shank Z value located on the front of the shank
+
+  //Serial.print("Thigh: "); Serial.print(thigh_y);
+  //Serial.println("\nShank: "); Serial.print(shank_z);
+  //Serial.println();
+
+
+  //return thigh_y * -1 - (shank_z + 90)*-1;
+  return (thigh_y * - shank_z - 90) *-1;
+}
+
 void loop() {
   
-  // Access the variables for each board
+  // Access the variables for each board --> shank
   int board1X = boardsStruct[0].x;
   int board1Y = boardsStruct[0].y;
   int board1Z = boardsStruct[0].z;
 
+  imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
+
+  Serial.print("knee joint angle: "); Serial.print(calculate_knee_angle(euler.y(), board1Z));
+  Serial.println();
+
+  //  thigh angles
+  Serial.print("\nthigh: "); Serial.print(euler.x());
+  Serial.print(" "); Serial.print(euler.y());
+  Serial.print(" "); Serial.print(euler.z());
+  Serial.println();
+
   delay(1000);
 }
-
-
