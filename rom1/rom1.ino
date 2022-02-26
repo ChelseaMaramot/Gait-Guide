@@ -140,9 +140,52 @@ int calculate_knee_angle(int thigh_y, int shank_z){
   //Serial.println("\nShank: "); Serial.print(shank_z);
   //Serial.println();
 
-
   //return thigh_y * -1 - (shank_z + 90)*-1;
   return (thigh_y - shank_z - 90) *-1;
+}
+
+
+// We call this function every time we detect heel strike
+// vx is the initial velocity in the horizontal x direction 
+// accel_x is the horizontal x acceleration
+// t is the time in seconds  
+int stride_length(int vx, int accel_x, int t){
+
+  // d_x(t) = vx * t + 1/2 * a_x * t^2
+
+  // Before moving our velocity is 0, but before calculating the stride length we keep updating the velocity
+  // For acceleration, we will use the forward direction X?
+  // We record the time from toe off to heel strike and obtain the acceleration and final velocity to calculate sride
+  return vx * t + 1/2 * accel_x * pow(t, 2);
+}
+
+// Calculates the final velocity in the x direction
+void velocity(int vx_o, int accel_x, int t){
+  // V_f = initial_velocity + acceleration * time 
+  // return an int final velocity
+}
+
+void is_toe_off(){
+  // src = https://www.physio-pedia.com/Gait#:~:text=Heel%20Strike%20(or%20initial%20contact,position%20then%20into%20plantar%20flexion.
+
+  // check if knee angle is 35 - 40 deg
+  // Check if plantar flexion is around 20 deg
+  // Check if toe has left the ground, vertical acceleration?
+  // if all true return true, else false
+}
+
+void is_heel_strike(){
+  // Check if appropirate foot angle
+  // return boolean 
+}
+
+
+void swing_time(){
+  // same as the toe off to heel strike time for stride length 
+}
+
+void stance_time(){
+  // full gait cycle - swing time
 }
 
 void loop() {
@@ -153,6 +196,7 @@ void loop() {
   int board1_thighZ = boardsStruct[0].z;
 
   imu::Vector<3> shank_euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
+  imu::Vector<3> foot_accel = bno.getVector(Adafruit_BNO055::VECTOR_ACCELEROMETER);
 
   Serial.print("knee joint angle: "); Serial.print(calculate_knee_angle(shank_euler.y(), board1_thighZ));
   Serial.println();
@@ -163,5 +207,34 @@ void loop() {
   Serial.print(" "); Serial.print(shank_euler.z());
   Serial.println();
 
-  delay(1000);
+  /*
+  Serial.print("X: ");
+  Serial.print(foot_accel.x());
+  Serial.print(" Y: ");
+  Serial.print(foot_accel.y());
+  Serial.print(" Z: ");
+  Serial.print(foot_accel.z());
+  Serial.print("\n");
+
+  */
+
+  /* Stride Length
+   * if time = 0 
+   *    append x_acceleration to acceleration list
+   * if foot is in toe off position
+   *     calculate the velocity 
+   *     set time to 0 
+   * else if foot is in heel strike position
+   *    record final time 
+   *    Average the acceleration list 
+   *    calculate the stride length using velocity obtained from toe off, average x acceleration, and final time
+   *    
+   *    Calculate Swing Tme
+        *  using the same time we got for a single stride length, calculate swing time
+         
+   *    set time = 0
+   */
+
+   
+  delay(500);
 }
