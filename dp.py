@@ -19,6 +19,7 @@ from plot import *
 
 
 from tkinter import *
+from tkinter import ttk
 
 plt.ion() #plots live data 
 arduino_data_knee = serial.Serial('COM8', 115200)
@@ -396,10 +397,23 @@ def main():
 window = Tk()
 window.wm_attributes("-transparentcolor", 'gray')
 
-window.geometry("1000x800")
+window.geometry("1000x820")
 window.configure(bg = "#ffffff")
+
+
+
+notebook = ttk.Notebook(window)
+notebook.pack()
+frame1 = Frame(notebook, width=1000, height = 800, bg="blue")
+frame2 = Frame(notebook, width=1000, height = 800, bg="red")
+frame1.pack(fill="both", expand=1)
+frame2.pack(fill="both", expand=2)
+notebook.add(frame1, text="Acquisition")
+notebook.add(frame2, text="Analysis")
+
+
 canvas = Canvas(
-    window,
+    frame1,
     bg = "#3A4B53",
     height = 800,
     width = 1000,
@@ -416,6 +430,7 @@ background = canvas.create_image(
 
 img0 = PhotoImage(file = f"gui/img0.png")
 b0 = Button(
+    frame1,
     image = img0,
     borderwidth = 0,
     highlightthickness = 0,
@@ -430,6 +445,7 @@ b0.place(
 
 img5 = PhotoImage(file = f"gui/img5.png")
 b5 = Button(
+    frame1,
     image = img5,
     borderwidth = 0,
     highlightthickness = 0,
@@ -444,6 +460,7 @@ b5.place(
 
 
 entry0 = Entry(
+    frame1,
     bd = 0,
     bg = "#FFCD00",
     highlightthickness = 0,
@@ -460,6 +477,7 @@ entry0.bind("<Button-1>", click_input)
 
 img1 = PhotoImage(file = f"gui/img1.png")
 b1 = Button(
+    frame1,
     image = img1,
     borderwidth = 0,
     highlightthickness = 0,
@@ -474,6 +492,7 @@ b1.place(
 
 img2 = PhotoImage(file = f"gui/img2.png")
 b2 = Button(
+    frame1,
     image = img2,
     borderwidth = 0,
     highlightthickness = 0,
@@ -490,6 +509,7 @@ b2.place(
 
 img3 = PhotoImage(file = f"gui/img3.png")
 b3 = Button(
+    frame1,
     image = img3,
     borderwidth = 0,
     highlightthickness = 0,
@@ -505,6 +525,7 @@ b3.place(
 
 img4 = PhotoImage(file = f"gui/img4.png")
 b4 = Button(
+    frame1,
     image = img4,
     borderwidth = 0,
     highlightthickness = 0,
@@ -519,28 +540,39 @@ b4.place(
 
 
 knee_angle_display = round(process_data[-1],2) if (len(process_data)>0)  else round(knee_joint_angle,2)
-knee_angle_text = Label(text=f"{knee_angle_display}", font= ('Helvetica 18'), bg= '#FFCD00')
+knee_angle_text = Label(frame1, text=f"{knee_angle_display}", font= ('Helvetica 18'), bg= '#FFCD00')
 knee_angle_text.place(x=820, y=187)
 
 velocity_display = round(process_velocity, 2)
-velocity_text = Label(text=f"{velocity_display}", font= ('Helvetica 18'), bg= '#FFCD00')
+velocity_text = Label(frame1, text=f"{velocity_display}", font= ('Helvetica 18'), bg= '#FFCD00')
 velocity_text.place(x=820, y=309)
 
 stride_length_display = round(process_stride_length, 2)
-stride_length_text = Label(text=f"{stride_length_display}", font= ('Helvetica 18'), bg= '#FFCD00')
+stride_length_text = Label(frame1, text=f"{stride_length_display}", font= ('Helvetica 18'), bg= '#FFCD00')
 stride_length_text.place(x=820, y=441)
 
 swing_time_display = round(process_swing_time, 2)
-swing_time_text = Label(text=f"{swing_time_display}", font= ('Helvetica 18'), bg= '#FFCD00')
+swing_time_text = Label(frame1, text=f"{swing_time_display}", font= ('Helvetica 18'), bg= '#FFCD00')
 swing_time_text.place(x=820, y=561)
 
 stance_time_display = round(process_stance_time, 2)
-stance_time_text = Label(text=f"{stance_time_display}", font= ('Helvetica 18'), bg= '#FFCD00')
+stance_time_text = Label(frame1, text=f"{stance_time_display}", font= ('Helvetica 18'), bg= '#FFCD00')
 stance_time_text.place(x=820, y=673)
 
+
+
+
+
+
+
 window.after(1, main)
+
 window.resizable(False, False)
 window.mainloop()
+
+
+
+
 
 
 
