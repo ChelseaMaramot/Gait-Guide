@@ -5,6 +5,7 @@ from matplotlib.figure import Figure
 from py import process
 import global_var
 import pandas as pd
+from time import sleep
 
 def plot_knee_flexion():
     plt.subplot(211)
@@ -74,7 +75,7 @@ def compare_previous_plot():
   
     df = pd.read_csv(f'data/{global_var.prev_file}.csv')
 
-    if (len(df.index) > global_var.df_index): 
+    if (len(df.index-1) > global_var.df_index): 
         global_var.df_prev_angles.append(df.Knee_Angle[global_var.df_index])
         global_var.df_index+=1
         plt.title("Gait Data: Knee Flex/Extension")
@@ -90,7 +91,8 @@ def compare_previous_plot():
         if (len(global_var.df_prev_angles)> 50):
             global_var.df_prev_angles.pop(0)
     else:
-        global_var.df_index = 0
+        global_var.df_index = 1
+        sleep(3)
     
     global_var.df_index = global_var.df_index
 

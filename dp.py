@@ -164,11 +164,18 @@ def click_input(event):
     print("Clicked!")
 
 
-def get_input():
+def set_input():
+    global previous_flag
     global entry0
+    global clicked
+
     print (entry0.get())
     clicked = False
-    return entry0.get()    
+    
+    if previous_flag:
+        global_var.prev_file = entry0.get()
+    else:
+        global_var.file_to_write = entry0.get()
 
 
 def display_filename_prompt():
@@ -328,7 +335,7 @@ def main():
                     to_avg_knee = []
                     to_avg_shank = []
                     to_avg_thigh = []
-                    write_csv(f"{file_to_write}")
+                    write_csv(f"{global_var.file_to_write}")
 
                 if (process):
                     drawnow(plot)
@@ -360,26 +367,26 @@ def main():
                 stance_time_display = round(process_stance_time, 2)
                 stance_time_text["text"] = f"{stance_time_display}"
             
-            
-
 
             elif (previous_flag):
                 drawnow(compare_previous_plot)
                 plt.pause(.00000001)
-                df = pd.read_csv(f'data/{prev_file}.csv')
-                knee_angle_display = (round(df.Knee_Angle[global_var.df_index],2) if (len(df.index) > 1)  else 0)
+                df = pd.read_csv(f'data/{global_var.prev_file}.csv')
+                print("fahfahfkahfka", len(df.Knee_Angle))
+                print(global_var.df_index-1)
+                knee_angle_display = (round(df.Knee_Angle[global_var.df_index-1],2) if (len(df.Knee_Angle) > 1)  else 0)
                 knee_angle_text["text"] = f"{knee_angle_display}"
 
-                velocity_display = (round(df.Foot_Velocity[global_var.df_index], 2) if (len(df.index) > 1)  else 0)
+                velocity_display = (round(df.Foot_Velocity[global_var.df_index-1], 2) if (len(df.Foot_Velocity) > 1)  else 0)
                 velocity_text["text"] = f"{velocity_display}"
 
-                stride_length_display = (round(df.Stride_Length[global_var.df_index], 2) if (len(df.index) > 1)  else 0)
+                stride_length_display = (round(df.Stride_Length[global_var.df_index-1], 2) if (len(df.Stride_Length) > 1)  else 0)
                 stride_length_text["text"] = f"{stride_length_display}"
 
-                swing_time_display = (round(df.Swing_Time[global_var.df_index], 2)  if (len(df.index) > 1)  else 0)
+                swing_time_display = (round(df.Swing_Time[global_var.df_index-1], 2)  if (len(df.Swing_Time) > 1)  else 0)
                 swing_time_text["text"] = f"{swing_time_display}"
               
-                stance_time_display = (round(df.Stance_Time[global_var.df_index], 2)  if (len(df.index) > 1)  else 0)
+                stance_time_display = (round(df.Stance_Time[global_var.df_index-1], 2)  if (len(df.Stance_Time) > 1)  else 0)
                 stance_time_text["text"] = f"{stance_time_display}"
                
 
@@ -393,7 +400,7 @@ window.geometry("1000x800")
 window.configure(bg = "#ffffff")
 canvas = Canvas(
     window,
-    bg = "#ffffff",
+    bg = "#3A4B53",
     height = 800,
     width = 1000,
     bd = 0,
@@ -435,9 +442,10 @@ b5.place(
     height = 62)
 
 
+
 entry0 = Entry(
     bd = 0,
-    bg = "#c4c4c4",
+    bg = "#FFCD00",
     highlightthickness = 0,
     font=('Century 12'),
     justify="center")
@@ -455,7 +463,7 @@ b1 = Button(
     image = img1,
     borderwidth = 0,
     highlightthickness = 0,
-    command = get_input,
+    command = set_input,
     relief = "flat")
 
 
@@ -511,24 +519,24 @@ b4.place(
 
 
 knee_angle_display = round(process_data[-1],2) if (len(process_data)>0)  else round(knee_joint_angle,2)
-knee_angle_text = Label(text=f"{knee_angle_display}", font= ('Helvetica 18'), bg= '#F5E489')
-knee_angle_text.place(x=800, y=199)
+knee_angle_text = Label(text=f"{knee_angle_display}", font= ('Helvetica 18'), bg= '#FFCD00')
+knee_angle_text.place(x=820, y=187)
 
 velocity_display = round(process_velocity, 2)
-velocity_text = Label(text=f"{velocity_display}", font= ('Helvetica 18'), bg= '#F5E489')
-velocity_text.place(x=800, y=321)
+velocity_text = Label(text=f"{velocity_display}", font= ('Helvetica 18'), bg= '#FFCD00')
+velocity_text.place(x=820, y=309)
 
 stride_length_display = round(process_stride_length, 2)
-stride_length_text = Label(text=f"{stride_length_display}", font= ('Helvetica 18'), bg= '#F5E489')
-stride_length_text.place(x=800, y=453)
+stride_length_text = Label(text=f"{stride_length_display}", font= ('Helvetica 18'), bg= '#FFCD00')
+stride_length_text.place(x=820, y=441)
 
 swing_time_display = round(process_swing_time, 2)
-swing_time_text = Label(text=f"{swing_time_display}", font= ('Helvetica 18'), bg= '#F5E489')
-swing_time_text.place(x=800, y=573)
+swing_time_text = Label(text=f"{swing_time_display}", font= ('Helvetica 18'), bg= '#FFCD00')
+swing_time_text.place(x=820, y=561)
 
 stance_time_display = round(process_stance_time, 2)
-stance_time_text = Label(text=f"{stance_time_display}", font= ('Helvetica 18'), bg= '#F5E489')
-stance_time_text.place(x=800, y=685)
+stance_time_text = Label(text=f"{stance_time_display}", font= ('Helvetica 18'), bg= '#FFCD00')
+stance_time_text.place(x=820, y=673)
 
 window.after(1, main)
 window.resizable(False, False)
