@@ -16,6 +16,7 @@ import knee
 import foot
 from global_var import *
 from plot import *
+from report import *
 
 
 from tkinter import *
@@ -101,6 +102,15 @@ def start_plot():
 def stop_plot():
     global start_flag
     start_flag = False
+    global file_to_write
+    global frame2
+    if (len(file_to_write) > 1):
+        set_report_avg(global_var.file_to_write)
+
+    report_velocity(frame2)
+    report_stride_length(frame2)
+    report_swing_time(frame2)
+    report_stance_time(frame2)
     print("Button Clicked")
 
 
@@ -195,7 +205,15 @@ def display_filename_prompt():
         #print("in the else statement")
         text = "Enter filename to record data on"
         entry0.insert(0, text)
+
+def set_report_avg(filename):
     
+    avg_swing, avg_stance = get_average_times(filename)
+    avg_vel = get_average_velocity(filename)
+    avg_stride = get_average_stride(filename)
+    
+    write_csv_report(avg_vel, avg_stride, avg_swing, avg_stance)
+
 
 def main(): 
     global is_calibrate 
@@ -229,13 +247,10 @@ def main():
     #entry0.bind("<Button-1>", click_input())
     #entry0.pack()
                
-    if (start_flag and arduino_data_knee.inWaiting() != 0):
+    if (start_flag and arduino_data_knee.inWaiting() != 0 and arduino_data_knee.inWaiting() != 0):
         # disablae changes in entry while running
         entry0.config(state=DISABLED)
-        
-        while (arduino_data_knee.inWaiting() == 0 or arduino_data_foot.inWaiting == 0):
-            pass
-        
+           
         data_knee = convert_arduino_data(arduino_data_knee)
         data_foot = convert_arduino_data(arduino_data_foot)
         thigh_angles.append(float(data_knee[0]))
@@ -389,8 +404,8 @@ def main():
               
                 stance_time_display = (round(df.Stance_Time[global_var.df_index-1], 2)  if (len(df.Stance_Time) > 1)  else 0)
                 stance_time_text["text"] = f"{stance_time_display}"
-               
 
+    
     window.after(1, main)
 
 
@@ -401,16 +416,20 @@ window.geometry("1000x820")
 window.configure(bg = "#ffffff")
 
 
-
 notebook = ttk.Notebook(window)
 notebook.pack()
 frame1 = Frame(notebook, width=1000, height = 800, bg="blue")
-frame2 = Frame(notebook, width=1000, height = 800, bg="red")
+frame2 = Frame(notebook, width=1000, height = 800, bg="#3A4B53")
 frame1.pack(fill="both", expand=1)
 frame2.pack(fill="both", expand=2)
 notebook.add(frame1, text="Acquisition")
 notebook.add(frame2, text="Analysis")
 
+
+report_velocity(frame2)
+report_stride_length(frame2)
+report_swing_time(frame2)
+report_stance_time(frame2)
 
 canvas = Canvas(
     frame1,
@@ -558,11 +577,6 @@ swing_time_text.place(x=820, y=561)
 stance_time_display = round(process_stance_time, 2)
 stance_time_text = Label(frame1, text=f"{stance_time_display}", font= ('Helvetica 18'), bg= '#FFCD00')
 stance_time_text.place(x=820, y=673)
-
-
-
-
-
 
 
 window.after(1, main)

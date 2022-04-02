@@ -1,5 +1,6 @@
 import scipy.io
 from tkinter import *
+from datetime import date
 
 mat = scipy.io.loadmat('matlab/Subject15.mat')
 online_knee_angle = mat['s'][0,0]['Data']['Ang'][0,0][6]
@@ -23,8 +24,9 @@ v_o = 0
 stride_length = 0
 stride_length_list= []
 
-file_to_write = "testing2"
-prev_file = "testing2"
+day = date.today().strftime("%b-%d-%Y")
+file_to_write = day
+prev_file = day
 
 
 thigh_offset = 0
