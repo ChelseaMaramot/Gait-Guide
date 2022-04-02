@@ -48,6 +48,10 @@ process_swing_time = 0
 process_stance_time = 0
 
 
+entry_is_disabled = False
+entry_placeholder = ""
+clicked = False
+
 def calibrate():
     print("Calibrating...")
     global_var.thigh_offset = -90 - sum(global_var.thigh_angles)/len(global_var.thigh_angles) 
@@ -98,9 +102,7 @@ def stop_plot():
     start_flag = False
     print("Button Clicked")
 
-def enter_input():
-    global entry0
-    return entry0.get()
+
 
 def clear():
     global graph_canvas
@@ -128,6 +130,7 @@ def set_previous():
         current_flag = False
         online_flag = False
         print("Set to previous")
+        display_filename_prompt()
 
 def set_current():
     global previous_flag
@@ -138,6 +141,7 @@ def set_current():
         previous_flag = False
         online_flag = False
         print("Set to current")
+        display_filename_prompt()
 
 def set_online():
     global previous_flag
@@ -148,7 +152,42 @@ def set_online():
         previous_flag = False
         current_flag = False
         print("Set to online")
+        display_filename_prompt()
 
+
+def click_input(event):
+    global entry0
+    global clicked 
+    entry0.config(state=NORMAL)
+    entry0.delete(0, END)
+    clicked = True
+    print("Clicked!")
+
+
+def get_input():
+    global entry0
+    print (entry0.get())
+    clicked = False
+    return entry0.get()    
+
+
+def display_filename_prompt():
+    global previous_flag
+    global entry0
+    global entry_is_disabled
+
+    entry0.delete(0, END)
+    
+    if (previous_flag):
+        #print("in previous flag")
+        text =  "Enter filename to plot"
+        entry0.insert(0,text)
+
+    else:
+        #print("in the else statement")
+        text = "Enter filename to record data on"
+        entry0.insert(0, text)
+    
 
 def main(): 
     global is_calibrate 
@@ -171,13 +210,24 @@ def main():
     global process_swing_time
     global process_stance_time
 
-    if (start_flag and arduino_data_knee.inWaiting() != 0):
+    global entry0
+    global clicked
 
-        # Wait until there is data 
-        #arduino_data_foot.inWaiting() == 0!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    if (not clicked):
+        display_filename_prompt()
+
+    
+    #entry0.bind("<Button-1>", click_input())
+    #entry0.pack()
+               
+    if (start_flag and arduino_data_knee.inWaiting() != 0):
+        # disablae changes in entry while running
+        entry0.config(state=DISABLED)
+        
         while (arduino_data_knee.inWaiting() == 0 or arduino_data_foot.inWaiting == 0):
             pass
-
+        
         data_knee = convert_arduino_data(arduino_data_knee)
         data_foot = convert_arduino_data(arduino_data_foot)
         thigh_angles.append(float(data_knee[0]))
@@ -219,6 +269,7 @@ def main():
             # Process data to compare with online data 
             process = False
             if (online_flag):
+
                 if (len(to_avg) == 0 or abs(global_var.knee_angles[-1] - to_avg[0]) < 0.7 ):
                     to_avg.append(global_var.knee_angles[-1])
                     to_avg_velocity.append(v_o)
@@ -387,19 +438,24 @@ b5.place(
 entry0 = Entry(
     bd = 0,
     bg = "#c4c4c4",
-    highlightthickness = 0)
+    highlightthickness = 0,
+    font=('Century 12'),
+    justify="center")
+
 
 entry0.place(
     x = 20, y = 622,
     width = 325,
     height = 57)
 
+entry0.bind("<Button-1>", click_input)
+
 img1 = PhotoImage(file = f"gui/img1.png")
 b1 = Button(
     image = img1,
     borderwidth = 0,
     highlightthickness = 0,
-    command = enter_input,
+    command = get_input,
     relief = "flat")
 
 
