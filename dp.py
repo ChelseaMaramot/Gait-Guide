@@ -28,7 +28,7 @@ arduino_data_foot = serial.Serial('COM9', 115200)
 
 start_flag = False
 previous_flag = False
-current_flag = False
+current_flag = True
 online_flag = False
 is_calibrate = True
 to_avg = []
@@ -250,7 +250,7 @@ def main():
     #entry0.bind("<Button-1>", click_input())
     #entry0.pack()
                
-    if (start_flag and arduino_data_knee.inWaiting() != 0 and arduino_data_knee.inWaiting() != 0):
+    if (start_flag and arduino_data_knee.inWaiting() != 0 and arduino_data_foot.inWaiting() != 0):
         # disablae changes in entry while running
         entry0.config(state=DISABLED)
            
@@ -264,10 +264,10 @@ def main():
         # Calibration
         stop = True
         if (is_calibrate and len(thigh_angles) < 20):
+            sleep(0.5)
             stop = False
+            print(shank_angles)
         elif (is_calibrate and len(thigh_angles) == 20):
-            print("Calibration will begin in 5 seconds")
-            sleep(5)
             calibrate()
             is_calibrate = False
             print("Thigh offset: ", global_var.thigh_offset)
@@ -278,18 +278,15 @@ def main():
         
         if (stop):
             #print(data_knee)
-            knee_joint_angle = knee.calculate_knee_angle(float(data_knee[0]), float(data_knee[1])) + shank_offset + thigh_offset
-            print(knee_joint_angle)
-            thigh = knee.adjust_sensor_saggital(float(data_knee[0]))
-            shank = knee.adjust_sensor_saggital(float(data_knee[1]))
+            knee_joint_angle = knee.calculate_knee_angle(float(data_knee[0]), float(data_knee[1])) + global_var.shank_offset - global_var.thigh_offset
+            print("knee joint angle: ", knee_joint_angle)
+            #thigh = knee.adjust_sensor_saggital(float(data_knee[0]))
+            #shank = knee.adjust_sensor_saggital(float(data_knee[1]))
             global_var.knee_angles.append(knee_joint_angle) 
-            sag_shank_angles.append(shank)
-            sag_thigh_angles.append(thigh)
+            #sag_shank_angles.append(shank)
+            #sag_thigh_angles.append(thigh)
         
-
-
             v_o = foot.velocity(v_o, float(data_foot[0]), 0.04)
-
             # Add average filter to foot angles
             is_toe_off = foot.is_toe_off(float(data_foot[1]))
             is_heel_strike = foot.is_heel_strike(float(data_foot[1]))
@@ -298,7 +295,6 @@ def main():
             # Process data to compare with online data 
             process = False
             if (online_flag):
-
                 if (len(to_avg) == 0 or abs(global_var.knee_angles[-1] - to_avg[0]) < 0.7 ):
                     to_avg.append(global_var.knee_angles[-1])
                     to_avg_velocity.append(v_o)
@@ -345,18 +341,18 @@ def main():
     
                 if (len(to_avg_knee) == 0 or abs(global_var.knee_angles[-1] - to_avg_knee[0]) < 0.7 ):
                     to_avg_knee.append(global_var.knee_angles[-1])
-                    to_avg_shank.append(shank)
-                    to_avg_thigh.append(thigh)
+                    #to_avg_shank.append(shank)
+                    #to_avg_thigh.append(thigh)
                     to_avg_velocity.append(v_o)
                 else:
                     process_data.append(sum(to_avg_knee)/len(to_avg_knee))
-                    process_sag_shank.append(sum(to_avg_shank)/len(to_avg_shank))
-                    process_sag_thigh.append(sum(to_avg_thigh)/len(to_avg_thigh))
+                    #process_sag_shank.append(sum(to_avg_shank)/len(to_avg_shank))
+                    #process_sag_thigh.append(sum(to_avg_thigh)/len(to_avg_thigh))
                     process_velocity = sum(to_avg_velocity)/len(to_avg_velocity)
                     process = True
                     to_avg_knee = []
-                    to_avg_shank = []
-                    to_avg_thigh = []
+                    #to_avg_shank = []
+                    #to_avg_thigh = []
                     write_csv(f"{global_var.file_to_write}")
 
                 if (process):
@@ -366,8 +362,6 @@ def main():
                 knee_angle_display = round(process_data[-1],2) if (len(process_data)>0)  else round(knee_joint_angle,2)
                 knee_angle_text["text"] = f"{knee_angle_display}"
 
-
-                print(process_velocity)
                 velocity_display = round(process_velocity, 2)
                 velocity_text["text"] = f"{velocity_display}"
                 
