@@ -58,8 +58,10 @@ def calibrate():
     print("Calibrating...")
     global_var.thigh_offset = -90 - sum(global_var.thigh_angles)/len(global_var.thigh_angles) 
     global_var.shank_offset = -90 - sum(global_var.shank_angles)/len(global_var.shank_angles) 
+    global_var.foot_offset = sum(global_var.foot_angles)/len(global_var.foot_angles)
     global_var.thigh_angles = []
     global_var.shank_angles = []
+    global_var.foot_angles = []
     global_var.calibrate = False
 
     
@@ -86,6 +88,7 @@ def write_csv(filename):
 
 
 def convert_arduino_data(arduino_data):
+    
     arduino_string = str(arduino_data.readline().strip())
     # Create an array with 3 values 
     data = re.split(",|b'|'", arduino_string)
@@ -263,23 +266,26 @@ def main():
         if (is_calibrate and len(thigh_angles) < 20):
             stop = False
         elif (is_calibrate and len(thigh_angles) == 20):
+            print("Calibration will begin in 5 seconds")
             sleep(5)
             calibrate()
             is_calibrate = False
-            print(thigh_offset)
-            print(shank_offset)
+            print("Thigh offset: ", global_var.thigh_offset)
+            print("Shank offset: ", global_var.shank_offset)
+            print("Foot offset: ", global_var.foot_offset)
+            print("End of calibration")
             sleep(5)
         
         if (stop):
-            print(data_knee)
-            knee_joint_angle = knee.calculate_knee_angle(float(data_knee[0]), float(data_knee[1])) + shank_offset - thigh_offset
-            #print(knee_joint_angle)
+            #print(data_knee)
+            knee_joint_angle = knee.calculate_knee_angle(float(data_knee[0]), float(data_knee[1])) + shank_offset + thigh_offset
+            print(knee_joint_angle)
             thigh = knee.adjust_sensor_saggital(float(data_knee[0]))
             shank = knee.adjust_sensor_saggital(float(data_knee[1]))
             global_var.knee_angles.append(knee_joint_angle) 
             sag_shank_angles.append(shank)
             sag_thigh_angles.append(thigh)
-            #print(knee_joint_angle)
+        
 
 
             v_o = foot.velocity(v_o, float(data_foot[0]), 0.04)

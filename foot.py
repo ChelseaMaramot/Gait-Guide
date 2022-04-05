@@ -33,7 +33,6 @@ def swing_time(toe_off, heel_strike):
         return (heel_strike_time - toe_off_time) # return time in seconds
     return 0
 
-
 def stance_time(toe_off, heel_strike):
     global toe_off_time 
     global heel_strike_time
