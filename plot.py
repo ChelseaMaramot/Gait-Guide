@@ -40,7 +40,7 @@ def plot_sagittal_angle():
 def plot():
     #plt.subplot(211)
     plt.title("Gait Data: Knee Flex/Extension")
-    #plt.ylim(0,130)
+    plt.ylim(0,90)
     plt.plot(global_var.process_data, 'bo-', label="knee angle")
     plt.grid(True)
     plt.ylabel("Knee Angle (deg)")
@@ -80,7 +80,7 @@ def compare_previous_plot():
         global_var.df_index+=1
         plt.title("Gait Data: Knee Flex/Extension")
         plt.ylabel("Knee Angle (deg)")
-        #plt.ylim(10,190)
+        plt.ylim(0,90)
 
         #plt.plot(knee_angles, 'bo-', label="knee angle")
         plt.plot(global_var.df_prev_angles, 'go-', label=f"{global_var.prev_file}")
@@ -101,14 +101,14 @@ def compare_previous_plot():
 def compare_online():
     
     plt.title("Gait Data: Knee Flex/Extension")
-    plt.ylim(0,130)
-    plt.plot(global_var.plot_online_data, 'bo-', label="knee angle")
+    plt.ylim(0,90)
+    plt.plot(global_var.plot_online_data, 'bo-', label="Online knee angle")
     plt.grid(True)
     plt.ylabel("Knee Angle (deg)")
     plt.legend(loc='upper right')
 
-    plt.ylim(0,130)
-    plt.plot(global_var.process_data, 'go-', label="knee angle")
+    plt.ylim(0,90)
+    plt.plot(global_var.process_data, 'go-', label="Patient knee angle")
     plt.grid(True)
     plt.ylabel("Knee Angle (deg)")
     plt.legend(loc='upper right')

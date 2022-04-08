@@ -38,7 +38,7 @@ to_avg_knee = []
 to_avg_shank = []
 to_avg_thigh = []
 
-
+foot_angle = 0
 v_o = 0
 stride_length = 0
 stride_length_list = []
@@ -53,6 +53,9 @@ process_stance_time = 0
 entry_is_disabled = False
 entry_placeholder = ""
 clicked = False
+
+report_index = 0
+reports = [0,1,2,3] ### change according to number of report graphs
 
 def calibrate():
     print("Calibrating...")
@@ -109,13 +112,6 @@ def stop_plot():
     global frame2
     if (len(file_to_write) > 1):
         set_report_avg(global_var.file_to_write)
-
-    report_velocity(frame2)
-    report_stride_length(frame2)
-    report_swing_time(frame2)
-    report_stance_time(frame2)
-    print("Button Clicked")
-
 
 
 def clear():
@@ -183,7 +179,7 @@ def set_input():
     global entry0
     global clicked
 
-    print (entry0.get())
+    #print (entry0.get())
     clicked = False
     
     if previous_flag:
@@ -217,6 +213,37 @@ def set_report_avg(filename):
     
     write_csv_report(avg_vel, avg_stride, avg_swing, avg_stance)
 
+def next():
+    global report_index
+    if (report_index < len(reports)):
+        report_index+=1
+    else:
+        report_index = 0
+    print("pressed next")
+
+
+def prev():
+    global report_index
+    if (report_index > 0):
+        report_index-=1
+    else:
+        report_index = len(reports)-1
+    print("pressed previous")
+
+
+def display_report(frame): 
+    global report_index
+
+    if report_index == 0:
+        report_velocity(frame)
+    elif report_index == 1:
+        report_stride_length(frame)
+    elif report_index == 2:
+        report_stance_time(frame)
+    elif report_index == 3:
+        report_swing_time(frame)
+
+
 
 def main(): 
     global is_calibrate 
@@ -238,6 +265,7 @@ def main():
     global process_stride_length
     global process_swing_time
     global process_stance_time
+    global foot_angle
 
     global entry0
     global clicked
@@ -266,7 +294,7 @@ def main():
         if (is_calibrate and len(thigh_angles) < 20):
             sleep(0.5)
             stop = False
-            print(shank_angles)
+            #print(shank_angles)
         elif (is_calibrate and len(thigh_angles) == 20):
             calibrate()
             is_calibrate = False
@@ -279,17 +307,21 @@ def main():
         if (stop):
             #print(data_knee)
             knee_joint_angle = knee.calculate_knee_angle(float(data_knee[0]), float(data_knee[1])) + global_var.shank_offset - global_var.thigh_offset
-            print("knee joint angle: ", knee_joint_angle)
+            #print("knee joint angle: ", knee_joint_angle)
             #thigh = knee.adjust_sensor_saggital(float(data_knee[0]))
             #shank = knee.adjust_sensor_saggital(float(data_knee[1]))
             global_var.knee_angles.append(knee_joint_angle) 
             #sag_shank_angles.append(shank)
             #sag_thigh_angles.append(thigh)
+
+            foot_angle = float(data_foot[1]) - global_var.foot_offset
+            #print("Foot angle: ", foot_angle)
         
-            v_o = foot.velocity(v_o, float(data_foot[0]), 0.04)
+            v_o = foot.velocity(v_o, float(data_foot[0]), 0.05)
+            #print("v_0: ", v_o)
             # Add average filter to foot angles
-            is_toe_off = foot.is_toe_off(float(data_foot[1]))
-            is_heel_strike = foot.is_heel_strike(float(data_foot[1]))
+            is_toe_off = foot.is_toe_off(foot_angle)
+            is_heel_strike = foot.is_heel_strike(foot_angle)
 
         
             # Process data to compare with online data 
@@ -349,6 +381,7 @@ def main():
                     #process_sag_shank.append(sum(to_avg_shank)/len(to_avg_shank))
                     #process_sag_thigh.append(sum(to_avg_thigh)/len(to_avg_thigh))
                     process_velocity = sum(to_avg_velocity)/len(to_avg_velocity)
+                    #print(process_velocity)
                     process = True
                     to_avg_knee = []
                     #to_avg_shank = []
@@ -367,6 +400,7 @@ def main():
                 
 
                 process_stride_length += foot.stride_length(process_velocity, float(data_foot[0]), 0.04)
+                
                 if (v_o == 0):
                     #stride_length_list.append(stride_length)
                     process_stride_length = 0;
@@ -388,22 +422,25 @@ def main():
                 drawnow(compare_previous_plot)
                 plt.pause(.00000001)
                 df = pd.read_csv(f'data/{global_var.prev_file}.csv')
-                print("fahfahfkahfka", len(df.Knee_Angle))
-                print(global_var.df_index-1)
-                knee_angle_display = (round(df.Knee_Angle[global_var.df_index-1],2) if (len(df.Knee_Angle) > 1)  else 0)
+                #print("fahfahfkahfka", len(df.Knee_Angle))
+                #print(global_var.df_index-1)
+                knee_angle_display = (round(df.Knee_Angle[global_var.df_index-1],3) if (len(df.Knee_Angle) > 1)  else 0)
                 knee_angle_text["text"] = f"{knee_angle_display}"
 
-                velocity_display = (round(df.Foot_Velocity[global_var.df_index-1], 2) if (len(df.Foot_Velocity) > 1)  else 0)
+                velocity_display = (round(df.Foot_Velocity[global_var.df_index-1], 5) if (len(df.Foot_Velocity) > 1)  else 0)
+                
                 velocity_text["text"] = f"{velocity_display}"
 
-                stride_length_display = (round(df.Stride_Length[global_var.df_index-1], 2) if (len(df.Stride_Length) > 1)  else 0)
+                stride_length_display = (round(df.Stride_Length[global_var.df_index-1], 3) if (len(df.Stride_Length) > 1)  else 0)
                 stride_length_text["text"] = f"{stride_length_display}"
 
-                swing_time_display = (round(df.Swing_Time[global_var.df_index-1], 2)  if (len(df.Swing_Time) > 1)  else 0)
+                swing_time_display = (round(df.Swing_Time[global_var.df_index-1], 3)  if (len(df.Swing_Time) > 1)  else 0)
                 swing_time_text["text"] = f"{swing_time_display}"
-              
-                stance_time_display = (round(df.Stance_Time[global_var.df_index-1], 2)  if (len(df.Stance_Time) > 1)  else 0)
+    
+                stance_time_display = (round(df.Stance_Time[global_var.df_index-1], 3)  if (len(df.Stance_Time) > 1)  else 0)
                 stance_time_text["text"] = f"{stance_time_display}"
+    elif not start_flag:
+        display_report(frame2)
 
     
     window.after(1, main)
@@ -579,6 +616,83 @@ stance_time_text = Label(frame1, text=f"{stance_time_display}", font= ('Helvetic
 stance_time_text.place(x=820, y=673)
 
 
+####################################    PAGE2########################
+
+canvas_2 = Canvas(
+    frame2,
+    bg = "#3a4b53",
+    height = 800,
+    width = 1000,
+    bd = 0,
+    highlightthickness = 0,
+    relief = "ridge")
+canvas_2.place(x = 0, y = 0)
+
+img0_2 = PhotoImage(file = f"gui/page2/img0.png")
+b0 = Button(
+    frame2,
+    image = img0_2,
+    borderwidth = 0,
+    highlightthickness = 0,
+    #command = btn_clicked,
+    relief = "flat")
+
+b0.place(
+    x = 445, y = 651,
+    width = 141,
+    height = 57)
+
+img1_2 = PhotoImage(file = f"gui/page2/img1.png")
+b1_2 = Button(
+    frame2,
+    image = img1_2,
+    borderwidth = 0,
+    highlightthickness = 0,
+    command = prev,
+    relief = "flat")
+
+b1_2.place(
+    x = 628, y = 633,
+    width = 118,
+    height = 30)
+
+img2_2 = PhotoImage(file = f"gui/page2/img2.png")
+b2_2 = Button(
+    frame2,
+    image = img2_2,
+    borderwidth = 0,
+    highlightthickness = 0,
+    command = next,
+    relief = "flat")
+
+b2_2.place(
+    x = 767, y = 633,
+    width = 118,
+    height = 30)
+
+entry0_img_2 = PhotoImage(file = f"gui/page2/img_textBox0.png")
+entry0_bg_2 = canvas_2.create_image(
+    276.5, 679.5,
+    image = entry0_img_2)
+
+entry0_2 = Entry(
+    frame2,
+    bd = 0,
+    bg = "#ffd939",
+    highlightthickness = 0)
+
+entry0_2.place(
+    x = 114, y = 651,
+    width = 325,
+    height = 55)
+
+background_img_2 = PhotoImage(file = f"gui/page2/background.png")
+background_2 = canvas_2.create_image(
+    499.0, 413.5,
+    image=background_img_2)
+
+
+
 window.after(1, main)
 
 window.resizable(False, False)
@@ -699,7 +813,7 @@ while True:
     data_foot = re.split(",|b'|'", arduino_string_foot)
     data_foot = list(filter(None, data_foot))
 
-    foot_angles.append(float(data_foot[1]))
+    foot_angles.append(foot_angle)
     foot_accel.append(float(data_foot[0]))
 
     # Change according to delay 

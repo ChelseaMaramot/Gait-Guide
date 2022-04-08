@@ -103,11 +103,11 @@ def report_velocity(frame):
     plot.set_title("Changes in Velocity Over Time")
     plot.set_xlabel('Date (day/month/year)')
     plot.set_ylabel('Velocity (m/s)')
-    plot.set_xticklabels(plot.get_xticks(), rotation=0)
+    #plot.set_xticklabels(plot.get_xticks(), rotation=0)
    
 
     canvas = FigureCanvasTkAgg(fig, master=frame)
-    canvas.get_tk_widget().place(x=35, y=147, width=279, height=195)
+    canvas.get_tk_widget().place(x=113, y=76, width=771, height=520)
     canvas.draw()
 
     '''
@@ -135,11 +135,11 @@ def report_stride_length(frame):
     plot.set_title("Changes in Stride Length Over Time")
     plot.set_xlabel('Date (day/month/year)')
     plot.set_ylabel('Stride Length (m)')
-    plot.set_xticklabels(plot.get_xticks(), rotation=0)
+    #plot.set_xticklabels(plot.get_xticks(), rotation=0)
    
 
     canvas = FigureCanvasTkAgg(fig, master=frame)
-    canvas.get_tk_widget().place(x=363, y=147, width=279, height=195)
+    canvas.get_tk_widget().place(x=113, y=76, width=771, height=520)
     canvas.draw()
 
 
@@ -168,10 +168,10 @@ def report_swing_time(frame):
     plot.set_title("Changes in Swing Time Over Time")
     plot.set_xlabel('Date (day/month/year)')
     plot.set_ylabel('Swing Time (s)')
-    plot.set_xticklabels(plot.get_xticks(), rotation=0)
+    #plot.set_xticklabels(plot.get_xticks(), rotation=0)
    
     canvas = FigureCanvasTkAgg(fig, master=frame)
-    canvas.get_tk_widget().place(x=35, y=414, width=279, height=195)
+    canvas.get_tk_widget().place(x=113, y=76, width=771, height=520)
     canvas.draw()
 
 
@@ -196,10 +196,10 @@ def report_stance_time(frame):
     plot.set_title("Changes in Stance Time Over Time")
     plot.set_xlabel('Date (day/month/year)')
     plot.set_ylabel('Stance Time (s)')
-    plot.set_xticklabels(plot.get_xticks(), rotation=0)
+    #plot.set_xticklabels(plot.get_xticks(), rotation=0)
    
     canvas = FigureCanvasTkAgg(fig, master=frame)
-    canvas.get_tk_widget().place(x=363, y=414, width=279, height=195)
+    canvas.get_tk_widget().place(x=113, y=76, width=771, height=520)
     canvas.draw()
 
     
