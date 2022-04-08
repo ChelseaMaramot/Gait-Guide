@@ -178,14 +178,18 @@ def set_input():
     global previous_flag
     global entry0
     global clicked
+    global prev_text
+    global saving_text
 
     #print (entry0.get())
     clicked = False
     
     if previous_flag:
         global_var.prev_file = entry0.get()
+        prev_text["text"] = f"{global_var.prev_file}"
     else:
         global_var.file_to_write = entry0.get()
+        saving_text["text"] = f"{global_var.file_to_write}"
 
 
 def display_filename_prompt():
@@ -614,6 +618,14 @@ swing_time_text.place(x=820, y=561)
 stance_time_display = round(process_stance_time, 2)
 stance_time_text = Label(frame1, text=f"{stance_time_display}", font= ('Helvetica 18'), bg= '#FFCD00')
 stance_time_text.place(x=820, y=673)
+
+
+saving_text = Label(frame1, text=f"{global_var.file_to_write}", font= ('Helvetica 8'), bg= '#FFCD00')
+saving_text.place(x=69, y=710.11)
+
+
+prev_text = Label(frame1, text=f"{global_var.prev_file}", font= ('Helvetica 8'), bg= '#FFCD00')
+prev_text.place(x=69, y=765.04)
 
 
 ####################################    PAGE2########################
