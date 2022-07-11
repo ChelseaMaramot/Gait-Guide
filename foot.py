@@ -11,7 +11,11 @@ def velocity(v_o, accel_y, t):
 
 def stride_length(v_o, accel_y, t):
     accel_y*=-1
-    return v_o *t + 1/2 * accel_y* pow(t,2)
+    l =  v_o *t + 1/2 * accel_y* pow(t,2)
+
+    if l<0:
+        l*=-1
+    return l
 
 def is_toe_off(foot_z):
     

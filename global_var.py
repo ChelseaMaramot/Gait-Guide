@@ -12,7 +12,6 @@ knee_angles = []
 sag_shank_angles = []
 sag_thigh_angles = []
 fieldnames = ["Knee_Angle", "Foot_Velocity", "Stride_Length", "Swing_Time", "Stance_Time"]
-#fieldnames = ["Foot Velocity", "Foot Acceleration", "Stride Length"]
 
 cnt=0
 df_index = 0
@@ -41,7 +40,3 @@ process_sag_thigh = []
 
 
 
-
-
-#knee_angle_text = Label(text=f"{knee_joint_angle}")
-#plot_flexion = False 
