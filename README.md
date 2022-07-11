@@ -46,7 +46,8 @@ Note: All data is graphed live, as the user walks.
 
 
 ### Physical Prototype
-![prototype_front](https://user![prototype_side](https://user-images.githubusercontent.com/61253723/178176766-7e2ec785-555a-4f21-9858-4a0c20cb34fe.jpg)
+![prototype_front](https://user-images.githubusercontent.com/61253723/178178442-02c581d3-5e11-4baf-8f58-74fcf48b454b.jpg)
+
 
 ![prototype_side](https://user-images.githubusercontent.com/61253723/178176885-7ae03b0e-3a55-4be0-8665-a701957fc469.jpg)
 
